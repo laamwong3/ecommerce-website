@@ -4,9 +4,10 @@ import Commerce from "@chec/commerce.js";
 import { GetStaticProps, NextPage } from "next";
 import { P_KEY } from "../constants/config";
 import { Product } from "@chec/commerce.js/types/product";
-import s from "../styles/Home.module.css";
+import s from "../styles/Home.module.scss";
+import ProductList from "../components/Home/ProductList";
 
-interface HomeProps {
+export interface HomeProps {
   products: Product[];
 }
 
@@ -15,20 +16,7 @@ const Home: NextPage<HomeProps> = ({ products }) => {
   return (
     <>
       <div>
-        {products.map((product, index) => (
-          <div key={index} className={s.card}>
-            <Image
-              className={s.img}
-              src={product.image?.url ?? ""}
-              alt={product.name}
-              width={product.image?.image_dimensions.width}
-              height={product.image?.image_dimensions.height}
-            />
-
-            <p>{product.name}</p>
-            <p>{product.price.raw}</p>
-          </div>
-        ))}
+        <ProductList products={products} />
       </div>
     </>
   );
