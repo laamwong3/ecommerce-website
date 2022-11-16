@@ -1,9 +1,13 @@
-.card {
-  width: 500px;
-  height: 1000px;
+@use "../../styles/common/common" as *;
+.container {
+  @include container;
+  .card {
+    width: 500px;
+    height: 1000px;
 
-  .img {
-    width: 100%;
-    height: 60%;
+    .img {
+      width: 100%;
+      height: 60%;
+    }
   }
 }

@@ -3,9 +3,9 @@ import React, { FC } from "react";
 import { HomeProps } from "../../pages";
 import s from "./ProductList.module.scss";
 
-const ProductList: FC<HomeProps> = ({ products }) => {
+const ProductList = ({ products }: HomeProps) => {
   return (
-    <div>
+    <div className={s.container}>
       {products.map((product, index) => (
         <div key={index} className={s.card}>
           <Image

@@ -1,0 +1,25 @@
+@use "../../styles/common/common" as *;
+
+.navbar {
+  @include flex_center;
+  width: 100%;
+  height: 100px;
+  background: #eee;
+
+  .container {
+    @include container;
+    @include flex_center;
+    width: 100%;
+    justify-content: space-between;
+
+    .header {
+      font-size: 2rem;
+      color: black;
+    }
+
+    .cart {
+      font-size: 2rem;
+      color: black;
+    }
+  }
+}
