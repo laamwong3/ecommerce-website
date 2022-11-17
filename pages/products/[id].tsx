@@ -1,6 +1,6 @@
 import Commerce from "@chec/commerce.js";
 import { Product } from "@chec/commerce.js/types/product";
-import { GetStaticProps, NextPage } from "next";
+import { GetServerSideProps, GetStaticProps, NextPage } from "next";
 import { type } from "os";
 import { ParsedUrlQuery } from "querystring";
 import React from "react";
@@ -14,19 +14,19 @@ interface ProductsProps {
 }
 
 const Products: NextPage<ProductsProps> = ({ product }) => {
-  return <div>Products</div>;
+  return <div>{product.price.formatted_with_symbol}</div>;
 };
 
 export default Products;
 
-// export const getStaticProps: GetStaticProps = async ({ params }) => {
-//   const { id } = params as Iparams;
-
-//   const commerce = new Commerce(P_KEY ?? "");
-//   const product = await commerce.products.retrieve(id, { type: "permalink" });
-//   return {
-//     props: {
-//       product,
-//     },
-//   };
-// };
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+  const { id } = params as Iparams;
+  // console.log(id);
+  const commerce = new Commerce(P_KEY ?? "");
+  const product = await commerce.products.retrieve(id);
+  return {
+    props: {
+      product,
+    },
+  };
+};

@@ -9,7 +9,7 @@ import s from "./ProductCard.module.scss";
 const { Meta } = Card;
 const ProductCard = ({ product }: { product: Product }) => {
   return (
-    <Link href={`/products/${product.name}`}>
+    <Link href={`/products/${product.id}`}>
       <Card
         className={s.card}
         hoverable
