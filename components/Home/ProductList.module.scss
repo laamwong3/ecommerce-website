@@ -1,6 +1,13 @@
 @use "../../styles/common/common" as *;
+@use "../../styles/common/variables" as *;
 .container {
   @include container;
+
+  .content {
+    @media screen and (max-width: $xxl) {
+      margin: 0 32px;
+    }
+  }
   .card {
     width: 500px;
     height: 1000px;
