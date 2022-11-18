@@ -9,7 +9,7 @@ const ProductDetails = ({ product }: ProductsProps) => {
     <div className={s.container}>
       <div className={s.content}>
         <Row>
-          <Col xs={24} sm={24} md={12} lg={12} xl={12} xxl={12}>
+          <Col xs={24} sm={24} md={24} lg={12} xl={12} xxl={12}>
             <div className={s.product_img}>
               <Image
                 className={s.img}
@@ -20,9 +20,9 @@ const ProductDetails = ({ product }: ProductsProps) => {
               />
             </div>
           </Col>
-          <Col xs={24} sm={24} md={12} lg={12} xl={12} xxl={12}>
+          <Col xs={24} sm={24} md={24} lg={12} xl={12} xxl={12}>
             <div className={s.product_details}>
-              <div>
+              <div className={s.header}>
                 <Typography.Title level={1}>{product.name}</Typography.Title>
                 <Typography.Title level={3}>Description:</Typography.Title>
                 <p dangerouslySetInnerHTML={{ __html: product.description }} />
