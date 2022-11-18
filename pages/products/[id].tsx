@@ -3,18 +3,22 @@ import { Product } from "@chec/commerce.js/types/product";
 import { GetServerSideProps, NextPage } from "next";
 import { ParsedUrlQuery } from "querystring";
 import React from "react";
+import ProductDetails from "../../components/Products/ProductDetails";
 import { P_KEY } from "../../constants/config";
-import s from "../../styles/pages/Products.module.scss";
 
 interface Iparams extends ParsedUrlQuery {
   id: string;
 }
-interface ProductsProps {
+export interface ProductsProps {
   product: Product;
 }
 
 const Products: NextPage<ProductsProps> = ({ product }) => {
-  return <div className={s.container}></div>;
+  return (
+    <div>
+      <ProductDetails product={product} />
+    </div>
+  );
 };
 
 export default Products;

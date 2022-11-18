@@ -33,7 +33,7 @@ const initialState = {
   order: null,
 };
 
-const ShoppingCart: FC<ShoppingCartProps> = ({ children }) => {
+const ShoppingCart = ({ children }: ShoppingCartProps) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const shoppingCart = { state, dispatch };
 
