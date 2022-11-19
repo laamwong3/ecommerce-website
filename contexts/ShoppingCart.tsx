@@ -10,7 +10,7 @@ interface ShoppingCartState {
 }
 
 interface ShoppingCartAction {
-  type: string;
+  type: ShoppingCartStatus;
 }
 
 interface ShoppingCartContext {
@@ -20,10 +20,16 @@ interface ShoppingCartContext {
   };
 }
 
+enum ShoppingCartStatus {
+  CART_RETRIEVE_REQUEST = "CART_RETRIEVE_REQUEST",
+  CART_RETRIEVE_SUCCESS = "CART_RETRIEVE_SUCCESS",
+}
+
 const ShoppingCartStore = createContext({} as ShoppingCartContext);
 
 const reducer = (state: ShoppingCartState, action: ShoppingCartAction) => {
   switch (action.type) {
+    // case
     default:
       return state;
   }
