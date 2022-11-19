@@ -1,3 +1,4 @@
+import { Cart } from "@chec/commerce.js/types/cart";
 import React, { createContext, FC, useContext, useReducer } from "react";
 
 interface ShoppingCartProps {
@@ -5,12 +6,13 @@ interface ShoppingCartProps {
 }
 
 interface ShoppingCartState {
-  cart: { loading: boolean };
+  cart: { loading: boolean; data?: Cart };
   order: string | null;
 }
 
 interface ShoppingCartAction {
   type: ShoppingCartStatus;
+  payload?: Cart;
 }
 
 interface ShoppingCartContext {
@@ -20,7 +22,7 @@ interface ShoppingCartContext {
   };
 }
 
-enum ShoppingCartStatus {
+export enum ShoppingCartStatus {
   CART_RETRIEVE_REQUEST = "CART_RETRIEVE_REQUEST",
   CART_RETRIEVE_SUCCESS = "CART_RETRIEVE_SUCCESS",
 }
@@ -29,7 +31,13 @@ const ShoppingCartStore = createContext({} as ShoppingCartContext);
 
 const reducer = (state: ShoppingCartState, action: ShoppingCartAction) => {
   switch (action.type) {
-    // case
+    case ShoppingCartStatus.CART_RETRIEVE_REQUEST:
+      return { ...state, cart: { loading: true } } as ShoppingCartState;
+    case ShoppingCartStatus.CART_RETRIEVE_SUCCESS:
+      return {
+        ...state,
+        cart: { loading: false, data: action.payload },
+      } as ShoppingCartState;
     default:
       return state;
   }

@@ -5,6 +5,7 @@ import { ParsedUrlQuery } from "querystring";
 import React from "react";
 import ProductDetails from "../../components/Products/ProductDetails";
 import { P_KEY } from "../../constants/config";
+import { useShoppingCart } from "../../contexts/ShoppingCart";
 
 interface Iparams extends ParsedUrlQuery {
   id: string;

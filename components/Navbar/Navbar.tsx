@@ -1,22 +1,68 @@
-import React from "react";
+import React, { ReactNode, useEffect } from "react";
 import s from "./Navbar.module.scss";
-import { Typography } from "antd";
+import { Badge, Spin, Typography } from "antd";
 import Link from "next/link";
-
+import {
+  ShoppingCartStatus,
+  useShoppingCart,
+} from "../../contexts/ShoppingCart";
+import Commerce from "@chec/commerce.js";
+import { P_KEY } from "../../constants/config";
+import { LoadingOutlined } from "@ant-design/icons";
+import Footer from "../Footer/Footer";
 const { Title, Text, Paragraph } = Typography;
 
-const Navbar = () => {
+interface NavbarProps {
+  children: ReactNode;
+}
+
+const Navbar = ({ children }: NavbarProps) => {
+  const {
+    shoppingCart: { dispatch, state },
+  } = useShoppingCart();
+
+  const { cart } = state;
+
+  useEffect(() => {
+    (async () => {
+      const commerce = new Commerce(P_KEY ?? "");
+      dispatch({ type: ShoppingCartStatus.CART_RETRIEVE_REQUEST });
+      const cartData = await commerce.cart.retrieve();
+      console.log(cartData);
+      dispatch({
+        type: ShoppingCartStatus.CART_RETRIEVE_SUCCESS,
+        payload: cartData,
+      });
+    })();
+  }, []);
+
   return (
-    <div className={s.navbar}>
-      <div className={s.container}>
-        <Link href={"/"} className={s.header}>
-          E-commerce
-        </Link>
-        <Link href={"/"} className={s.cart}>
-          Cart
-        </Link>
+    <>
+      <div>
+        <div className={s.navbar}>
+          <div className={s.container}>
+            <Link href={"/"} className={s.header}>
+              E-commerce
+            </Link>
+            {cart.loading ? (
+              <Badge count={<LoadingOutlined />}>
+                <Link href={"/"} className={s.cart}>
+                  Cart
+                </Link>
+              </Badge>
+            ) : (
+              <Badge count={cart.data?.total_items}>
+                <Link href={"/"} className={s.cart}>
+                  Cart
+                </Link>
+              </Badge>
+            )}
+          </div>
+        </div>
+        {children}
       </div>
-    </div>
+      <Footer />
+    </>
   );
 };
 

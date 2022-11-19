@@ -4,6 +4,7 @@ import ShoppingCart from "../contexts/ShoppingCart";
 import Head from "next/head";
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
+import Layout from "../components/Layout/Layout";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -15,9 +16,9 @@ export default function App({ Component, pageProps }: AppProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <ShoppingCart>
-        <Navbar />
-        <Component {...pageProps} />
-        <Footer />
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
       </ShoppingCart>
     </>
   );

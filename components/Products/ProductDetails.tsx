@@ -1,12 +1,48 @@
+import Commerce from "@chec/commerce.js";
 import { Button, Col, Divider, Input, Row, Typography } from "antd";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
+import { P_KEY } from "../../constants/config";
+import {
+  ShoppingCartStatus,
+  useShoppingCart,
+} from "../../contexts/ShoppingCart";
 import { ProductsProps } from "../../pages/products/[id]";
 import s from "./ProductDetails.module.scss";
 
 const ProductDetails = ({ product }: ProductsProps) => {
   const [quantity, setQuantity] = useState(1);
-  // console.log(quantity);
+  const router = useRouter();
+
+  const {
+    shoppingCart: { dispatch, state },
+  } = useShoppingCart();
+
+  const { cart } = state;
+
+  const addToCart = async () => {
+    const commerce = new Commerce(P_KEY ?? "");
+    const lineItem = cart.data?.line_items.find(
+      (item) => item.product_id === product.id
+    );
+
+    if (lineItem) {
+      const cartData = await commerce.cart.update(lineItem.id, { quantity });
+      dispatch({
+        type: ShoppingCartStatus.CART_RETRIEVE_SUCCESS,
+        payload: cartData.cart,
+      });
+      router.push("/cart");
+    } else {
+      const cartData = await commerce.cart.add(product.id, quantity);
+      dispatch({
+        type: ShoppingCartStatus.CART_RETRIEVE_SUCCESS,
+        payload: cartData.cart,
+      });
+      router.push("/cart");
+    }
+  };
 
   return (
     <div className={s.container}>
@@ -71,7 +107,7 @@ const ProductDetails = ({ product }: ProductsProps) => {
                   </div>
 
                   <div className={s.button}>
-                    <Button>Add to Cart</Button>
+                    <Button onClick={addToCart}>Add to Cart</Button>
                   </div>
                 </div>
               </div>
