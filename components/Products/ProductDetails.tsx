@@ -33,15 +33,14 @@ const ProductDetails = ({ product }: ProductsProps) => {
         type: ShoppingCartStatus.CART_RETRIEVE_SUCCESS,
         payload: cartData.cart,
       });
-      router.push("/cart");
     } else {
       const cartData = await commerce.cart.add(product.id, quantity);
       dispatch({
         type: ShoppingCartStatus.CART_RETRIEVE_SUCCESS,
         payload: cartData.cart,
       });
-      router.push("/cart");
     }
+    router.push("/cart");
   };
 
   return (

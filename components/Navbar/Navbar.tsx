@@ -51,8 +51,8 @@ const Navbar = ({ children }: NavbarProps) => {
                 </Link>
               </Badge>
             ) : (
-              <Badge count={cart.data?.total_items}>
-                <Link href={"/"} className={s.cart}>
+              <Badge count={cart.data?.total_items} showZero>
+                <Link href={"/cart"} className={s.cart}>
                   Cart
                 </Link>
               </Badge>
@@ -60,8 +60,8 @@ const Navbar = ({ children }: NavbarProps) => {
           </div>
         </div>
         {children}
+        <Footer />
       </div>
-      <Footer />
     </>
   );
 };
