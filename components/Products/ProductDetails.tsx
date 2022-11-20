@@ -17,6 +17,8 @@ const ProductDetails = ({ product }: ProductsProps) => {
 
   const {
     shoppingCart: { dispatch, state },
+    setRefreshCart,
+    refreshCart,
   } = useShoppingCart();
 
   const { cart } = state;
@@ -27,20 +29,27 @@ const ProductDetails = ({ product }: ProductsProps) => {
       (item) => item.product_id === product.id
     );
 
+    console.log(lineItem);
+
     if (lineItem) {
       const cartData = await commerce.cart.update(lineItem.id, { quantity });
+      console.log(cartData);
       dispatch({
         type: ShoppingCartStatus.CART_RETRIEVE_SUCCESS,
         payload: cartData.cart,
       });
     } else {
       const cartData = await commerce.cart.add(product.id, quantity);
+      console.log(cartData);
       dispatch({
         type: ShoppingCartStatus.CART_RETRIEVE_SUCCESS,
         payload: cartData.cart,
       });
     }
-    router.push("/cart");
+    setRefreshCart(!refreshCart);
+    // console.log(state);
+
+    await router.push("/cart");
   };
 
   return (

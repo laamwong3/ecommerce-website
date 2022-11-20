@@ -1,5 +1,11 @@
 import { Cart } from "@chec/commerce.js/types/cart";
-import React, { createContext, FC, useContext, useReducer } from "react";
+import React, {
+  createContext,
+  FC,
+  useContext,
+  useReducer,
+  useState,
+} from "react";
 
 interface ShoppingCartProps {
   children: React.ReactNode;
@@ -20,6 +26,8 @@ interface ShoppingCartContext {
     state: ShoppingCartState;
     dispatch: React.Dispatch<ShoppingCartAction>;
   };
+  refreshCart: boolean;
+  setRefreshCart: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export enum ShoppingCartStatus {
@@ -48,11 +56,14 @@ const initialState = {
 };
 
 const ShoppingCart = ({ children }: ShoppingCartProps) => {
+  const [refreshCart, setRefreshCart] = useState(false);
   const [state, dispatch] = useReducer(reducer, initialState);
   const shoppingCart = { state, dispatch };
 
   return (
-    <ShoppingCartStore.Provider value={{ shoppingCart }}>
+    <ShoppingCartStore.Provider
+      value={{ shoppingCart, refreshCart, setRefreshCart }}
+    >
       {children}
     </ShoppingCartStore.Provider>
   );

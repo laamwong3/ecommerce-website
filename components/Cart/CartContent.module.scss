@@ -1,0 +1,12 @@
+@use "../../styles/common/common" as *;
+@use "../../styles/common/variables" as *;
+.container {
+  @include container;
+
+  .cart {
+    margin: 2rem 0;
+    @media screen and (max-width: $xxl) {
+      margin: 2rem 32px;
+    }
+  }
+}

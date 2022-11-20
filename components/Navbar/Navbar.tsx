@@ -19,22 +19,25 @@ interface NavbarProps {
 const Navbar = ({ children }: NavbarProps) => {
   const {
     shoppingCart: { dispatch, state },
+    refreshCart,
   } = useShoppingCart();
 
   const { cart } = state;
+
+  // console.log(cart);
 
   useEffect(() => {
     (async () => {
       const commerce = new Commerce(P_KEY ?? "");
       dispatch({ type: ShoppingCartStatus.CART_RETRIEVE_REQUEST });
       const cartData = await commerce.cart.retrieve();
-      console.log(cartData);
+      // console.log(cartData);
       dispatch({
         type: ShoppingCartStatus.CART_RETRIEVE_SUCCESS,
         payload: cartData,
       });
     })();
-  }, []);
+  }, [refreshCart]);
 
   return (
     <>
