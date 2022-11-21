@@ -20,6 +20,8 @@ const Navbar = ({ children }: NavbarProps) => {
   const {
     shoppingCart: { dispatch, state },
     refreshCart,
+    setRefreshChckout,
+    refreshChckout,
   } = useShoppingCart();
 
   const { cart } = state;
@@ -36,6 +38,7 @@ const Navbar = ({ children }: NavbarProps) => {
         type: ShoppingCartStatus.CART_RETRIEVE_SUCCESS,
         payload: cartData,
       });
+      setRefreshChckout(!refreshChckout);
     })();
   }, [refreshCart]);
 

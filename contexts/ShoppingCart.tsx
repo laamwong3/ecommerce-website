@@ -28,6 +28,8 @@ interface ShoppingCartContext {
   };
   refreshCart: boolean;
   setRefreshCart: React.Dispatch<React.SetStateAction<boolean>>;
+  refreshChckout: boolean;
+  setRefreshChckout: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export enum ShoppingCartStatus {
@@ -57,12 +59,19 @@ const initialState = {
 
 const ShoppingCart = ({ children }: ShoppingCartProps) => {
   const [refreshCart, setRefreshCart] = useState(false);
+  const [refreshChckout, setRefreshChckout] = useState(false);
   const [state, dispatch] = useReducer(reducer, initialState);
   const shoppingCart = { state, dispatch };
 
   return (
     <ShoppingCartStore.Provider
-      value={{ shoppingCart, refreshCart, setRefreshCart }}
+      value={{
+        shoppingCart,
+        refreshCart,
+        setRefreshCart,
+        refreshChckout,
+        setRefreshChckout,
+      }}
     >
       {children}
     </ShoppingCartStore.Provider>
