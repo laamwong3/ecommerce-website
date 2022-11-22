@@ -18,6 +18,10 @@ interface DataType {
   itemId: string;
 }
 
+interface ItemsQuantity {
+  quantity: number;
+  itemId: string;
+}
 // const dataSource: DataType[] = [
 //   { key: "1", name: "hello", price: 100, quantity: 2 },
 //   { key: "2", name: "yes", price: 10, quantity: 20 },
@@ -25,7 +29,7 @@ interface DataType {
 
 const CartContent = () => {
   const [dataSource, setDataSource] = useState<DataType[]>([]);
-  // const [quantity, setQuantity] = useState(1);
+  const [itemsQuantity, setItemsQuantity] = useState<ItemsQuantity[]>([]);
 
   const {
     shoppingCart: { dispatch, state },
@@ -36,6 +40,7 @@ const CartContent = () => {
 
   useEffect(() => {
     let tempCart: DataType[] = [];
+    let tempItem: ItemsQuantity[] = [];
 
     cart.data?.line_items.map((cartItem) => {
       tempCart.push({
@@ -45,8 +50,13 @@ const CartContent = () => {
         price: cartItem.price.formatted_with_symbol,
         quantity: cartItem.quantity,
       });
+      tempItem.push({
+        itemId: cartItem.id,
+        quantity: cartItem.quantity,
+      });
     });
 
+    setItemsQuantity(tempItem);
     setDataSource(tempCart);
   }, [refreshChckout]);
 
@@ -57,7 +67,8 @@ const CartContent = () => {
       type: ShoppingCartStatus.CART_RETRIEVE_SUCCESS,
       payload: cartData.cart,
     });
-    setRefreshChckout(!refreshChckout);
+    // setItemsQuantity();
+    // setRefreshChckout(!refreshChckout);
   };
 
   const columns: ColumnType<DataType>[] = [
@@ -70,16 +81,18 @@ const CartContent = () => {
       title: "Quantity",
       dataIndex: "quantity",
       key: "quantity",
-      // render: (currentQuantity, { itemId }) => (
-      //   <Select
-      //     options={[...Array(currentQuantity).keys()].map((q) => {
-      //       return { value: q + 1 };
-      //     })}
-      //     value={currentQuantity}
-      //     onChange={(newValue) => handleQuantityChange(itemId, newValue)}
-      //     style={{ width: "100px" }}
-      //   />
-      // ),
+      render: (currentQuantity, { itemId }) => (
+        <Select
+          options={[...Array(currentQuantity).keys()].map((q) => {
+            return { value: q + 1 };
+          })}
+          value={
+            itemsQuantity.find((keyword) => keyword.itemId === itemId)?.quantity
+          }
+          onChange={(newValue) => handleQuantityChange(itemId, newValue)}
+          style={{ width: "100px" }}
+        />
+      ),
     },
     {
       title: "Price",
