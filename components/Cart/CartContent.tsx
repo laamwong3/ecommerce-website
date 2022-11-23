@@ -1,5 +1,7 @@
 import { CloseOutlined } from "@ant-design/icons";
 import Commerce from "@chec/commerce.js";
+import { CheckoutCapture } from "@chec/commerce.js/types/checkout-capture";
+import { CheckoutToken } from "@chec/commerce.js/types/checkout-token";
 import { Button, Col, InputNumber, Row, Select, Spin, Typography } from "antd";
 import Table, { ColumnType } from "antd/lib/table";
 import { useRouter } from "next/router";
@@ -32,6 +34,7 @@ interface ItemsQuantity {
 const CartContent = () => {
   const [dataSource, setDataSource] = useState<DataType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [checkoutToken, setCheckoutToken] = useState<CheckoutToken>();
   // const [itemsQuantity, setItemsQuantity] = useState<ItemsQuantity[]>([]);
   const router = useRouter();
 
@@ -69,6 +72,56 @@ const CartContent = () => {
     setDataSource(tempCart);
     setIsLoading(false);
   }, [refreshChckout]);
+
+  useEffect(() => {
+    (async () => {
+      if (!cart.loading && cart.data?.id) {
+        if (cart.data.line_items.length) {
+          const commerce = new Commerce(P_KEY ?? "");
+          const token = await commerce.checkout.generateToken(cart.data?.id, {
+            type: "cart",
+          });
+          setCheckoutToken(token);
+        }
+      }
+    })();
+  }, [cart.loading]);
+  console.log(checkoutToken?.line_items);
+  const handleCheckout = async () => {
+    const orderData: CheckoutCapture = {
+      line_items: checkoutToken?.line_items,
+      customer: {
+        firstname: "Jane",
+        lastname: "Doe",
+        email: "janedoe.abc.com",
+      },
+      payment: {
+        gateway: "test_gateway",
+        card: {
+          number: "1234123412341234",
+          cvc: "123",
+          expiry_month: "03",
+          expiry_year: "2080",
+          postal_zip_code: "1234",
+        },
+      },
+    };
+
+    const commerce = new Commerce(P_KEY ?? "");
+    if (checkoutToken?.id) {
+      const order = await commerce.checkout.capture(
+        checkoutToken?.id,
+        orderData
+      );
+      // dispatch({ type: ShoppingCartStatus.ORDER_SET, payload: order });
+    }
+    // const newCart = await commerce.cart.refresh();
+    // dispatch({
+    //   type: ShoppingCartStatus.CART_RETRIEVE_SUCCESS,
+    //   payload: newCart,
+    // });
+    // setRefreshCart(!refreshCart);
+  };
 
   const handleQuantityChange = async (itemId: string, quantity: number) => {
     setIsLoading(true);
@@ -164,7 +217,12 @@ const CartContent = () => {
                   cart.data?.subtotal.formatted_with_symbol
                 )}
               </Typography.Title>
-              <Button onClick={() => router.push("/checkout")} shape="round">
+              <Button
+                disabled={isLoading || cart.data?.line_items.length === 0}
+                onClick={handleCheckout}
+                // onClick={() => router.push("/checkout")}
+                shape="round"
+              >
                 Proceed to Checkout
               </Button>
             </div>

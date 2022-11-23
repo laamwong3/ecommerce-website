@@ -1,4 +1,5 @@
 import { Cart } from "@chec/commerce.js/types/cart";
+import { CheckoutCaptureResponse } from "@chec/commerce.js/types/checkout-capture-response";
 import React, {
   createContext,
   FC,
@@ -13,12 +14,12 @@ interface ShoppingCartProps {
 
 interface ShoppingCartState {
   cart: { loading: boolean; data?: Cart };
-  order: string | null;
+  order: CheckoutCaptureResponse | null;
 }
 
 interface ShoppingCartAction {
   type: ShoppingCartStatus;
-  payload?: Cart;
+  payload?: Cart | CheckoutCaptureResponse;
 }
 
 interface ShoppingCartContext {
@@ -35,6 +36,8 @@ interface ShoppingCartContext {
 export enum ShoppingCartStatus {
   CART_RETRIEVE_REQUEST = "CART_RETRIEVE_REQUEST",
   CART_RETRIEVE_SUCCESS = "CART_RETRIEVE_SUCCESS",
+  CART_REFRESH = "CART_REFRESH",
+  ORDER_SET = "ORDER_SET",
 }
 
 const ShoppingCartStore = createContext({} as ShoppingCartContext);
@@ -47,6 +50,11 @@ const reducer = (state: ShoppingCartState, action: ShoppingCartAction) => {
       return {
         ...state,
         cart: { loading: false, data: action.payload },
+      } as ShoppingCartState;
+    case ShoppingCartStatus.ORDER_SET:
+      return {
+        ...state,
+        order: action.payload,
       } as ShoppingCartState;
     default:
       return state;
