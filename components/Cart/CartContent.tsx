@@ -1,7 +1,8 @@
 import { CloseOutlined } from "@ant-design/icons";
 import Commerce from "@chec/commerce.js";
-import { Button, Col, InputNumber, Row, Select, Typography } from "antd";
+import { Button, Col, InputNumber, Row, Select, Spin, Typography } from "antd";
 import Table, { ColumnType } from "antd/lib/table";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { P_KEY } from "../../constants/config";
 import {
@@ -16,6 +17,7 @@ interface DataType {
   quantity: number;
   price: string;
   itemId: string;
+  selectedQuantity: number;
 }
 
 interface ItemsQuantity {
@@ -29,18 +31,24 @@ interface ItemsQuantity {
 
 const CartContent = () => {
   const [dataSource, setDataSource] = useState<DataType[]>([]);
-  const [itemsQuantity, setItemsQuantity] = useState<ItemsQuantity[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  // const [itemsQuantity, setItemsQuantity] = useState<ItemsQuantity[]>([]);
+  const router = useRouter();
 
   const {
     shoppingCart: { dispatch, state },
     refreshChckout,
     setRefreshChckout,
+    refreshCart,
+    setRefreshCart,
   } = useShoppingCart();
   const { cart } = state;
 
+  // console.log(cart.loading);
+
   useEffect(() => {
     let tempCart: DataType[] = [];
-    let tempItem: ItemsQuantity[] = [];
+    // let tempItem: ItemsQuantity[] = [];
 
     cart.data?.line_items.map((cartItem) => {
       tempCart.push({
@@ -49,18 +57,22 @@ const CartContent = () => {
         name: cartItem.name,
         price: cartItem.price.formatted_with_symbol,
         quantity: cartItem.quantity,
+        selectedQuantity: cartItem.quantity,
       });
-      tempItem.push({
-        itemId: cartItem.id,
-        quantity: cartItem.quantity,
-      });
+      // tempItem.push({
+      //   itemId: cartItem.id,
+      //   quantity: cartItem.quantity,
+      // });
     });
 
-    setItemsQuantity(tempItem);
+    // setItemsQuantity(tempItem);
     setDataSource(tempCart);
+    setIsLoading(false);
   }, [refreshChckout]);
 
   const handleQuantityChange = async (itemId: string, quantity: number) => {
+    setIsLoading(true);
+
     const commerce = new Commerce(P_KEY ?? "");
     const cartData = await commerce.cart.update(itemId, { quantity });
     dispatch({
@@ -69,6 +81,18 @@ const CartContent = () => {
     });
     // setItemsQuantity();
     // setRefreshChckout(!refreshChckout);
+    setRefreshCart(!refreshCart);
+  };
+
+  const handleRemoveItemFromCart = async (itemId: string) => {
+    setIsLoading(true);
+    const commerce = new Commerce(P_KEY ?? "");
+    const cartData = await commerce.cart.remove(itemId);
+    dispatch({
+      type: ShoppingCartStatus.CART_RETRIEVE_SUCCESS,
+      payload: cartData.cart,
+    });
+    setRefreshCart(!refreshCart);
   };
 
   const columns: ColumnType<DataType>[] = [
@@ -81,18 +105,19 @@ const CartContent = () => {
       title: "Quantity",
       dataIndex: "quantity",
       key: "quantity",
-      render: (currentQuantity, { itemId }) => (
-        <Select
-          options={[...Array(currentQuantity).keys()].map((q) => {
-            return { value: q + 1 };
-          })}
-          value={
-            itemsQuantity.find((keyword) => keyword.itemId === itemId)?.quantity
-          }
-          onChange={(newValue) => handleQuantityChange(itemId, newValue)}
-          style={{ width: "100px" }}
-        />
-      ),
+      render: (currentQuantity, { itemId, selectedQuantity }) =>
+        isLoading ? (
+          <Spin />
+        ) : (
+          <Select
+            options={[...Array(10).keys()].map((q) => {
+              return { value: q + 1 };
+            })}
+            value={selectedQuantity}
+            onChange={(newValue) => handleQuantityChange(itemId, newValue)}
+            style={{ width: "100px" }}
+          />
+        ),
     },
     {
       title: "Price",
@@ -104,7 +129,14 @@ const CartContent = () => {
       dataIndex: "action",
       key: "action",
       align: "right",
-      render: () => <Button icon={<CloseOutlined />} shape="circle" />,
+      render: (_, { itemId }) => (
+        <Button
+          disabled={isLoading}
+          onClick={() => handleRemoveItemFromCart(itemId)}
+          icon={<CloseOutlined />}
+          shape="circle"
+        />
+      ),
     },
   ];
 
@@ -123,12 +155,18 @@ const CartContent = () => {
           <Col xs={24} sm={24} md={24} lg={24} xl={6} xxl={6}>
             <div className={s.summary}>
               <Typography.Title style={{ textAlign: "center" }}>
-                Sub-Total:{" "}
-                <span style={{ color: "green" }}>
-                  {cart.data?.subtotal.formatted_with_symbol}
-                </span>
+                Sub-Total:
               </Typography.Title>
-              <Button shape="round">Proceed to Checkout</Button>
+              <Typography.Title style={{ color: "green", marginTop: 0 }}>
+                {isLoading ? (
+                  <Spin />
+                ) : (
+                  cart.data?.subtotal.formatted_with_symbol
+                )}
+              </Typography.Title>
+              <Button onClick={() => router.push("/checkout")} shape="round">
+                Proceed to Checkout
+              </Button>
             </div>
           </Col>
         </Row>
